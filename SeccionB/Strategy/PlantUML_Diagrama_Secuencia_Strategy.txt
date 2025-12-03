@@ -1,0 +1,73 @@
+@startuml Strategy_Pattern_Secuencia
+skinparam SequenceMessageAlignment left
+
+participant LogisticaDepartamento as LD
+participant EstrategiaAutomotriz as EA
+participant EstrategiaCiclista as EC
+participant Bodega as B
+
+LD -> LD : SetEstrategia(EA)
+note right of LD: Estrategia seleccionada: Automotriz
+
+LD -> LD : SetDestino(B)
+
+Cliente -> LD : SolicitarDistribucion(productos, B)
+activate LD
+    LD -> EA : Sincrono: Distribuir(productos, B)
+    activate EA
+    note over EA: Calcula ruta y ejecuta transporte automotriz.
+    EA --> LD : Retorno: true (Éxito)
+    deactivate EA
+LD --> Cliente : DistribucionExitosa
+
+Cliente -> LD : SetEstrategia(EC)
+LD -> LD : SetEstrategia(EC)
+note right of LD: Estrategia cambiada a Ciclista
+
+Cliente -> LD : SolicitarDistribucion(productos, B)
+activate LD
+    LD -> EC : Sincrono: Distribuir(productos, B)
+    activate EC
+    note over EC: Calcula ruta y ejecuta transporte ciclista.
+    EC --> LD : Retorno: true (Éxito)
+    deactivate EC
+LD --> Cliente : DistribucionExitosa
+deactivate LD
+
+@enduml@startuml Strategy_Pattern_Secuencia
+skinparam SequenceMessageAlignment left
+
+participant LogisticaDepartamento as LD
+participant EstrategiaAutomotriz as EA
+participant EstrategiaCiclista as EC
+participant Bodega as B
+
+LD -> LD : SetEstrategia(EA)
+note right of LD: Estrategia seleccionada: Automotriz
+
+LD -> LD : SetDestino(B)
+
+Cliente -> LD : SolicitarDistribucion(productos, B)
+activate LD
+    LD -> EA : Sincrono: Distribuir(productos, B)
+    activate EA
+    note over EA: Calcula ruta y ejecuta transporte automotriz.
+    EA --> LD : Retorno: true (Éxito)
+    deactivate EA
+LD --> Cliente : DistribucionExitosa
+
+Cliente -> LD : SetEstrategia(EC)
+LD -> LD : SetEstrategia(EC)
+note right of LD: Estrategia cambiada a Ciclista
+
+Cliente -> LD : SolicitarDistribucion(productos, B)
+activate LD
+    LD -> EC : Sincrono: Distribuir(productos, B)
+    activate EC
+    note over EC: Calcula ruta y ejecuta transporte ciclista.
+    EC --> LD : Retorno: true (Éxito)
+    deactivate EC
+LD --> Cliente : DistribucionExitosa
+deactivate LD
+
+@enduml

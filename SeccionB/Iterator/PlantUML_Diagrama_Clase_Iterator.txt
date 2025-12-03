@@ -1,0 +1,57 @@
+@startuml Iterator_Pattern_Clases
+skinparam ClassAttributeIconStyle relevant
+
+package "Patrón Iterator" {
+
+    interface IIterator {
+        + Siguiente(): Producto
+        + TieneMas(): boolean
+    }
+
+    interface IAggregate {
+        + CrearIterator(): IIterator
+    }
+
+    class Producto {
+        - nombre: string
+        - estado: string
+        - tiendaId: int
+    }
+
+    class InventarioNacional {
+        - productos: List<Producto>
+        + CrearIterator(tipo: string): IIterator
+    }
+
+    abstract class AbstractIterator {
+        # coleccion: IAggregate
+        # posicion: int
+        + AbstractIterator(coleccion: IAggregate)
+    }
+
+    class IteradorCompradorWeb {
+        + Siguiente(): Producto
+        + TieneMas(): boolean
+    }
+
+    class IteradorVendedorTienda {
+        - tiendaIdFiltro: int
+        + Siguiente(): Producto
+    }
+}
+
+' Relaciones
+InventarioNacional .up.|> IAggregate
+AbstractIterator .up.|> IIterator
+
+IteradorCompradorWeb .up.|> IIterator
+IteradorVendedorTienda .up.|> IIterator
+
+' Herencia de la implementación base (AbstractIterator)
+AbstractIterator <|-- IteradorCompradorWeb
+AbstractIterator <|-- IteradorVendedorTienda
+
+' Multiplicidad y Asociación
+InventarioNacional "1" o-- "*" Producto : contiene
+IteradorCompradorWeb "1" --> "1" InventarioNacional : recorre
+@enduml

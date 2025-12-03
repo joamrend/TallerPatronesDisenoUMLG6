@@ -1,0 +1,30 @@
+@startuml Iterator_Pattern_Secuencia
+skinparam SequenceMessageAlignment left
+
+actor Cliente
+participant InventarioNacional as AG
+participant IteradorConcreto as IT
+
+Cliente -> AG : CrearIterator("tipoVista")
+activate AG
+    note over AG: AG determina el tipo de iterador necesario.
+    AG -> IT *: new(InventarioNacional)*
+    activate IT
+    IT --> AG : Retorno: IteradorConcreto
+    deactivate IT
+AG --> Cliente : Retorno: IT
+deactivate AG
+
+Cliente -> Cliente : Almacenar(IT)
+
+loop mientras IT.TieneMas() == true
+    Cliente -> IT : Siguiente()
+    activate IT
+    IT -> AG : << consulta de datos >>
+    AG --> IT : Retorno: Producto p
+    IT --> Cliente : Retorno: Producto p
+    deactivate IT
+    Cliente -> Cliente : Procesar(p)
+end
+
+@enduml

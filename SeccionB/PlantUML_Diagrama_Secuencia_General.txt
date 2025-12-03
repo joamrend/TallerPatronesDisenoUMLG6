@@ -1,0 +1,61 @@
+@startuml General_Sequence_Diagram
+skinparam SequenceMessageAlignment left
+
+participant Cliente as C
+participant SistemaTienda as ST
+participant LogisticaDepartamento as LD
+participant EstrategiaFerrea as EF
+participant AsistenteGarantia as GA
+participant JefeInventario as JI
+
+C -> ST: Sincrono: DevolverProducto(prodDefectuoso)
+activate ST
+ST -> ST: IdentificarReemplazo(prodNuevo)
+
+' ----------------------------------
+' FASE 1: PATRÓN STRATEGY (Preparación de Distribución)
+' ----------------------------------
+group Seleccionar Estrategia de Distribución
+    ST -> LD: Sincrono: GetMejorEstrategia(destino: BodegaA)
+    activate LD
+        LD -> LD: // Lógica: Evaluar costos/tiempos
+        LD -> LD: SetEstrategia(EstrategiaFerrea)
+    LD --> ST: Retorno: EstrategiaFerrea (EF)
+    deactivate LD
+    
+    ST -> EF: Sincrono: Distribuir(prodNuevo, BodegaA)
+    activate EF
+        EF -> EF: // Ejecutar lógica férrea
+    EF --> ST: Retorno: DistribucionOK
+    deactivate EF
+end
+
+' ----------------------------------
+' FASE 2: PATRÓN CHAIN OF RESPONSIBILITY (Aprobación del Cambio)
+' ----------------------------------
+group Procesar Solicitud de Cambio (Chain of Responsibility)
+    ST -> ST: ConfigurarCadena(GA -> JI -> ...)
+    ST -> GA: Sincrono: ManejarSolicitud(SolicitudCambio)
+    activate GA
+    GA -> GA: // Verifica garantía OK
+    
+    GA -> JI: Sincrono: ManejarSolicitud(SolicitudCambio)
+    activate JI
+        JI -> JI: // Certifica Inventario OK
+        
+        alt Precio > 1000 USD
+            JI -> GerenteTienda: ManejarSolicitud(...)
+            GerenteTienda --> JI: Retorno: Solicitud
+        end
+        
+    JI --> GA: Retorno: SolicitudAprobada
+    deactivate JI
+    
+    GA --> ST: Retorno: SolicitudFinal
+    deactivate GA
+end
+
+ST -> C: Sincrono: CambioAprobado(prodReemplazo)
+deactivate ST
+
+@enduml

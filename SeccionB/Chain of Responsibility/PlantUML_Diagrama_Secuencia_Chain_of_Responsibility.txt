@@ -1,0 +1,46 @@
+@startuml CoR_Pattern_Secuencia
+skinparam SequenceMessageAlignment left
+
+participant SistemaTienda as ST
+participant AsistenteGarantia as GA
+participant ExpertoTecnico as ET
+participant JefeInventario as JI
+participant GerenteTienda as GT
+
+ST -> ST : ConfigurarCadena()
+note right of ST: GA.SetSiguiente(ET) -> ET.SetSiguiente(JI) -> ...
+
+Cliente -> ST : Sincrono: SolicitarCambio(producto)
+activate ST
+ST -> GA : Sincrono: ManejarSolicitud(solicitud)
+activate GA
+
+    GA -> GA : // Verificar Garantía
+    GA -> ET : Sincrono: ManejarSolicitud(solicitud)
+    deactivate GA
+    activate ET
+
+        ET -> ET : // Constatar Fallo
+        ET -> JI : Sincrono: ManejarSolicitud(solicitud)
+        deactivate ET
+        activate JI
+
+            JI -> JI : // Certificar Inventario
+
+            alt Precio > 1000 USD
+                JI -> GT : Sincrono: ManejarSolicitud(solicitud)
+                activate GT
+                GT -> GT : // Aprobar Gerencia
+                GT --> JI : Retorno: Solicitud
+                deactivate GT
+            end
+            JI --> ET : Retorno: Solicitud
+        deactivate JI
+        ET --> GA : Retorno: Solicitud
+    GA --> ST : Retorno: SolicitudFinal
+
+ST -> ST : // Procesar resultado final
+ST --> Cliente : NotificarResultado
+deactivate ST
+
+@enduml

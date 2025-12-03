@@ -1,0 +1,36 @@
+@startuml Strategy_Pattern_Clases
+skinparam ClassAttributeIconStyle relevant
+
+package "Patrón Strategy" {
+    class Producto {}
+    class Bodega {}
+
+    interface IDistributionStrategy {
+        + Distribuir(productos: List<Producto>, destino: Bodega): boolean
+    }
+
+    class LogisticaDepartamento {
+        - estrategia: IDistributionStrategy
+        + SetEstrategia(estrategia: IDistributionStrategy): void
+        + EjecutarDistribucion(productos: List<Producto>, destino: Bodega): boolean
+    }
+
+    class EstrategiaAutomotriz {
+        + Distribuir(productos: List<Producto>, destino: Bodega): boolean
+    }
+
+    class EstrategiaCiclista {
+        + Distribuir(productos: List<Producto>, destino: Bodega): boolean
+    }
+
+    class EstrategiaFerrea {
+        + Distribuir(productos: List<Producto>, destino: Bodega): boolean
+    }
+}
+
+' Relaciones
+LogisticaDepartamento "1" o-- "1" IDistributionStrategy : utiliza
+IDistributionStrategy <|.. EstrategiaAutomotriz
+IDistributionStrategy <|.. EstrategiaCiclista
+IDistributionStrategy <|.. EstrategiaFerrea
+@enduml

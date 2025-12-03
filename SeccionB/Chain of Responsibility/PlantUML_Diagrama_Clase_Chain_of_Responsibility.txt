@@ -1,0 +1,50 @@
+@startuml Chain_of_Responsibility_Clases
+skinparam ClassAttributeIconStyle relevant
+
+package "Patrón Chain of Responsibility" {
+    class SolicitudCambio {
+        - producto: Producto
+        - precioVenta: decimal
+        - enPeriodoGarantia: boolean = false
+        - falloCubierto: boolean = false
+        - inventarioDisponible: boolean = false
+        - aprobacionGerente: boolean = false
+    }
+
+    interface IGarantiaHandler {
+        + SetSiguiente(handler: IGarantiaHandler): IGarantiaHandler
+        + ManejarSolicitud(solicitud: SolicitudCambio): SolicitudCambio
+    }
+
+    abstract class AbstractHandler {
+        # siguienteHandler: IGarantiaHandler
+        + SetSiguiente(handler: IGarantiaHandler): IGarantiaHandler
+        + ManejarSolicitud(solicitud: SolicitudCambio): SolicitudCambio
+    }
+
+    class AsistenteGarantia {
+        + ManejarSolicitud(solicitud: SolicitudCambio): SolicitudCambio
+    }
+
+    class ExpertoTecnico {
+        + ManejarSolicitud(solicitud: SolicitudCambio): SolicitudCambio
+    }
+
+    class JefeInventario {
+        + ManejarSolicitud(solicitud: SolicitudCambio): SolicitudCambio
+    }
+
+    class GerenteTienda {
+        + ManejarSolicitud(solicitud: SolicitudCambio): SolicitudCambio
+    }
+}
+
+' Relaciones
+IGarantiaHandler <|.. AbstractHandler
+AbstractHandler <|-- AsistenteGarantia
+AbstractHandler <|-- ExpertoTecnico
+AbstractHandler <|-- JefeInventario
+AbstractHandler <|-- GerenteTienda
+
+AbstractHandler "1" o--> "0..1" IGarantiaHandler : siguienteHandler
+@enduml
